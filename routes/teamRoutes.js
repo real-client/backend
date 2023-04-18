@@ -1,7 +1,6 @@
-import express from 'express';
+import express from "express";
+const router = express.Router();
 import {createTeam ,getAllTeams, getTeamByID, updateTeam, deleteTeam}  from "../controllers/teamControllers.js"
-
-const router =  express.router();
 
 // Create a new team
 router.post('/', createTeam);
