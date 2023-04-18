@@ -4,9 +4,9 @@ import Event from "../models/eventModel.js";
 //create a new event
 export const createEvent = async (req, res) => {
   try {
-    console.log(req.body)
-    const event = await Event.create(req.body);
-    res.status(201).json(event);
+    const newEvent = new Event(req.body);
+    const category = await newEvent.save();
+    res.status(200).json({ success: true, message: category });
   } catch (err) {
     if (err.name === "ValidationError") {
       const errors = Object.values(err.errors).map((val) => val.message);
@@ -20,22 +20,23 @@ export const createEvent = async (req, res) => {
 // retrieve all events
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find();
-    res.json(events);
+    const events = await Event.find({});
+    res.status(200).send({ success: true, message: events});
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
 // retrieve a specific event by ID
-export const getEvent = async (req, res, next) => {
-  const { id } = req.params;
+export const getEventById = async (req, res, next) => {
   try {
-    const event = await Event.findById(id);
+    console.log("hey")
+    const event = await Event.findById(req.params.id);
+    console.log(event);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    res.event = event;
+    res.status(200).send({ success: true, message: event });
     next();
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -127,8 +128,8 @@ export const updateEventById = async (req, res) => {
 // delete an event by ID
 export const deleteEventById = async (req, res) => {
   try {
-    await res.event.remove();
-    res.json({ message: "Event deleted successfully" });
+    const deletedEvent = await Event.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: "Event deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

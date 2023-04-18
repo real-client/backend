@@ -38,13 +38,13 @@ const eventSchema = new Schema({
     type: String,
     required: true,
   },
-  poster_pic: {
+  image: {
     type: String,
     required: true,
   },
   pdf: {
     type: String,
-    required: true,
+    // required: true,
   },
   capacity: {
     type: Number,
@@ -58,11 +58,13 @@ const eventSchema = new Schema({
     type: String,
     required: true,
   },
-  users: [{
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    // required: true,
-  }],
+  users: [
+  //   {
+  //   type: Schema.Types.ObjectId,
+  //   ref: "User",
+  //   // required: true,
+  // }
+],
   status: {
     type: String,
     enum: ["open", "closed", "canceled"],
