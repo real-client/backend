@@ -1,22 +1,22 @@
-import mongoose from 'mongoose';
-const {Schema, model}= mongoose;
-const partnerSchema = new Schema({
-   
-     name: {
-        type: String,
-        required: true,
-        unique: [true,"name already exist"],
+import mongoose from "mongoose";
+const { Schema, model } = mongoose;
+const partnerSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: [true, "name already exist"],
     },
-     logo: {
-        type: String,
-        required: true,
+    logo: {
+      type: String,
+      required: true,
     },
-   
-},
-{timestamps:true},
-{
-    collection: 'partner'
-});
+  },
+  { timestamps: true },
+  {
+    collection: "partner",
+  }
+);
 
-const partnerModel = model('partner', partnerSchema);
+const partnerModel = model("partner", partnerSchema);
 export default partnerModel;
