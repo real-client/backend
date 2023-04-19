@@ -25,16 +25,18 @@ export const getTeamByID = async (req, res) => {
 
 //create new team
 export const createTeam = async (req, res) => {
-    const team = new Team({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        images: req.body.images,
-        title: req.body.title,
-        email: req.body.email,
-        linkedin: req.body.linkedin,
-        role: req.body.role
-      });
+   
       try {
+        const team = new Team({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            image: req.body.image,
+            title: req.body.title,
+            email: req.body.email,
+            linkedin: req.body.linkedin,
+            role: req.body.role
+          });
+          
         const newTeam = await team.save();
         res.status(201).json(newTeam);
     } catch (err) {
@@ -45,13 +47,13 @@ export const createTeam = async (req, res) => {
 //update an existing team
 export const updateTeam = async (req, res) => {
     try {
-        const team = await team.findById(req.params.id);
+        const team = await Team.findById(req.params.id);
         if (!team) {
             return res.status(404).json({ message: 'Team not found' });
         }
         team.firstName = req.body.firstName;
         team.lastName = req.body.lastName;
-        team.images = req.body.images;
+        team.image = req.body.image;
         team.title = req.body.title;
         team.email = req.body.email;
         team.linkedin = req.body.linkedin;
@@ -65,15 +67,18 @@ export const updateTeam = async (req, res) => {
 };
 
 //delete team by ID
-export const deleteTeam = async (req, res) => {
-    try {
-        const team = await Team.findById(req.params.id);
-        if (!team) {
-          return res.status(404).json({ message: 'Team not found' });
+export function deleteTeam(req, res, next) {
+    let { id } = req.params;
+    Team.findByIdAndDelete(id)
+      .then((data) => {
+        if (!data) {
+          res.status(404).send({ message: "team not found" });
+        } else {
+          res.status(200).send({ success: true, message: "delete successfully" });
         }
-        await team.remove();
-        res.json({ message: 'Team deleted successfully' });
-      } catch (err) {
-        res.status(500).json({ message: err.message });
-      }
-    };
+      })
+  
+      .catch((err) => {
+        res.status(500).send({ message: "error deleting Opportunity" });
+      });
+  }

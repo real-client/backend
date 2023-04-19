@@ -53,7 +53,7 @@ export async function AddOpportunity(req, res) {
     });
 
     const ad = await model.save();
-    console.log(ad);
+    // console.log(ad);
     return res.status(201).send(ad);
   } catch (err) {
     res.status(500).send({ err });

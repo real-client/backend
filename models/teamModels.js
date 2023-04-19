@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 
 const teamSchema = mongoose.Schema({
 
-    firstName: { type: String, required: true },
+    firstName: { type: String},
 
-    lastName: { type: String, required: true },
+    lastName: { type: String},
 
-    images: { type: String },
+    image: { type: String },
 
     title: { type: String },
 
