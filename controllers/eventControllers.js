@@ -50,87 +50,6 @@ export const getEventById = async (req, res, next) => {
 };
 
 // update a specific event by ID
-// export const updateEventById = async (req, res) => {
-//   try {
-//     const {
-//       title,
-//       description,
-//       objectives,
-//       speaker_name,
-//       speaker_title,
-//       target_audience,
-//       target_faculties,
-//       poster_pic,
-//       pdf,
-//       capacity,
-//       category,
-//       user,
-//       status,
-//       deadline_date,
-//       deadline_time,
-//       event_date,
-//       event_time,
-//     } = req.body;
-
-//     if (title) {
-//       res.event.title = title;
-//     }
-//     if (description) {
-//       res.event.description = description;
-//     }
-//     if (objectives) {
-//       res.event.objectives = objectives;
-//     }
-//     if (speaker_name) {
-//       res.event.speaker_name = speaker_name;
-//     }
-//     if (speaker_title) {
-//       res.event.speaker_title = speaker_title;
-//     }
-//     if (target_audience) {
-//       res.event.target_audience = target_audience;
-//     }
-//     if (target_faculties) {
-//       res.event.target_faculties = target_faculties;
-//     }
-//     if (poster_pic) {
-//       res.event.poster_pic = poster_pic;
-//     }
-//     if (pdf) {
-//       res.event.pdf = pdf;
-//     }
-//     if (capacity) {
-//       res.event.capacity = capacity;
-//     }
-//     if (category) {
-//       res.event.category = category;
-//     }
-//     if (user) {
-//       res.event.user = user;
-//     }
-//     if (status) {
-//       res.event.status = status;
-//     }
-//     if (deadline_date) {
-//       res.event.deadline_date = deadline_date;
-//     }
-//     if (deadline_time) {
-//       res.event.deadline_time = deadline_time;
-//     }
-//     if (event_date) {
-//       res.event.event_date = event_date;
-//     }
-//     if (event_time) {
-//       res.event.event_time = event_time;
-//     }
-
-//     const updatedEvent = await res.event.save();
-//     res.json(updatedEvent);
-//   } catch (err) {
-//     res.status(400).json({ message: err.message });
-//   }
-// };
-
 export const updateEventById = async (req, res) => {
   try {
     const eventId = req.params.id;
@@ -142,16 +61,21 @@ export const updateEventById = async (req, res) => {
     if (req.files && req.files['image']) {
       const oldImagePath = event.image;
       if (oldImagePath) {
-        fs.unlinkSync(oldImagePath);
+        fs.unlinkSync(oldImagePath, (err) => {
+          if (err) throw err;
+          console.log(`Successfully deleted image ${event.image}`);
+        });
       }
       updatedEvent.image = req.files['image'][0].path;
     }
-
     // delete old pdf if new one is uploaded
     if (req.files && req.files['pdf']) {
       const oldPdfPath = event.pdf;
       if (oldPdfPath) {
-        fs.unlinkSync(oldPdfPath);
+        fs.unlinkSync(oldPdfPath, (err) => {
+          if (err) throw err;
+          console.log(`Successfully deleted pdf ${event.pdf}`);
+        });
       }
       updatedEvent.pdf = req.files['pdf'][0].path;
     }
@@ -167,7 +91,7 @@ export const updateEventById = async (req, res) => {
   }
 };
 
-
+// delete a specific event by ID
 export const deleteEventById = async (req, res) => {
   const { id } = req.params;
   try {
