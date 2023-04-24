@@ -1,10 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 
 import connectDB from "./config/db.js";
 
 import userRouter from "./routes/userRoutes.js";
+
+import adminRouter from "./routes/adminRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -17,7 +20,9 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use("/user", userRouter);
+app.use("/admin", adminRouter);
 app.get("/", (req, res) => {
   res.send("API is running ...");
 });
