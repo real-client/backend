@@ -11,6 +11,7 @@ import {
 
 import imageUpload from "../middleware/imageUpload.js";
 
+
 // get all events
 router.get("/", getAllEvents);
 
@@ -24,6 +25,6 @@ router.get("/:id", getEventById);
 router.patch("/:id",imageUpload, updateEventById);
 
 // delete an event by ID
-router.delete("/:id",imageUpload, deleteEventById);
+router.delete("/:id", deleteEventById);
 
 export default router;
