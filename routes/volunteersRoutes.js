@@ -1,7 +1,7 @@
-import express from 'express';
+import express from "express";
+const router = express.Router();
 import {createVolunteer, getAllVolunteers, getVolunteerByID, updateVolunteer, deleteVolunteer} from '../controllers/volunteersControllers.js';
 
-const router = express.router();
 
 // Create a new volunteer
 router.post('/', createVolunteer);

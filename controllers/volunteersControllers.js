@@ -3,7 +3,7 @@ import Volunteer from "../models/volunteersModels.js";
 //get all volunteersRoutes
 export const getAllVolunteers = async (req,res) => {
     try {
-        const volunteers = await volunteers.find();
+        const volunteers = await Volunteer.find();
         res.json(volunteers);
     } catch (err) {
         res.status(500).json({message : err.message});
@@ -11,16 +11,21 @@ export const getAllVolunteers = async (req,res) => {
 };
 
 //get volunteer by ID
-export const getVolunteerByID = async (req, res) => {
-    try{
-        const volunteer = await volunteer.findById(req.params.id);
-        if (!volunteer) {
-            return res.status(404).json({message:"volunteer not found"});
-        }  
-    } catch (err) {
-        res.status(500).json({message : err.message});
-    }
-};
+export function getVolunteerByID(req, res, next) {
+    let { id } = req.params;
+    Volunteer.findOne({ _id: id })
+      .then((response) => {
+        if (!response) {
+          res.status(404).send({ message: "volunteer not found" });
+        } else {
+          res.status(200).send({ response });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({ message: err.message });
+        next(err);
+      });
+  }
 
 //create new volunteer
 export const createVolunteer = async (req, res) => {
@@ -44,7 +49,7 @@ export const createVolunteer = async (req, res) => {
 //update an existing volunteer
 export const updateVolunteer = async (req, res) => {
     try {
-        const volunteer = await volunteer.findById(req.params.id);
+        const volunteer = await Volunteer.findById(req.params.id);
         if (!volunteer) {
             return res.status(404).json({message: 'Volunteer not found'});
         }
@@ -65,15 +70,18 @@ export const updateVolunteer = async (req, res) => {
 };
 
 //delete volunteer by ID
-export const deleteVolunteer = async (req, res) => {
-    try {
-        const volunteer = await Volunteer.findById(req.params.id);
-        if (!volunteer) {
-          return res.status(404).json({ message: 'Volunteer not found' });
+export function deleteVolunteer(req, res, next) {
+    let { id } = req.params;
+    Volunteer.findByIdAndDelete(id)
+      .then((data) => {
+        if (!data) {
+          res.status(404).send({ message: "volunteer not found" });
+        } else {
+          res.status(200).send({ success: true, message: "delete successfully" });
         }
-        await volunteer.remove();
-        res.json({ message: 'Volunteer deleted successfully' });
-      } catch (err) {
-        res.status(500).json({ message: err.message });
-      }
-    };
+      })
+  
+      .catch((err) => {
+        res.status(500).send({ message: "error deleting Opportunity" });
+      });
+  }
