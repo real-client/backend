@@ -74,6 +74,7 @@ class User {
         uni_role,
         gender,
         phone,
+        date_of_birth,
         nationality,
         residence,
         student_id,
@@ -101,6 +102,7 @@ class User {
           gender &&
           phone &&
           nationality &&
+          date_of_birth &&
           residence &&
           student_id &&
           special_needs &&
@@ -137,6 +139,7 @@ class User {
         uni_role: uni_role,
         gender: gender,
         phone: phone,
+        date_of_birth: date_of_birth,
         nationality: nationality,
         residence: residence,
         student_id: student_id,

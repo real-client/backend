@@ -13,6 +13,7 @@ const userSchema = new Schema({
   uni_role: { type: String, required: true },
   gender: { type: String, enum: ["Male", "Female"], required: true },
   phone: { type: String, required: true },
+  date_of_birth: { type: Date, min: "1900-01-01", required: true },
   nationality: { type: String, required: true },
   residence: { type: String, required: true },
   student_id: { type: Number, required: true },
