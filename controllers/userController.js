@@ -113,7 +113,7 @@ class User {
           password
         )
       ) {
-        res.status(400).send("Please fill the required inputs");
+        return res.status(400).send("Please fill the required inputs");
       }
 
       // check if user already exist
