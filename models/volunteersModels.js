@@ -5,6 +5,8 @@ const volunteersSchema = mongoose.Schema({
     firstName: { type: String, required: true },
 
     lastName: { type: String, required: true },
+    
+    image: { type: String },
 
     title: { type: String, required: true },
 
@@ -15,6 +17,7 @@ const volunteersSchema = mongoose.Schema({
     startingDate: { type: Date, required: true },
 
     endingDate: { type: Date, required: true }
+
 
 })
 

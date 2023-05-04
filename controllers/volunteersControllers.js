@@ -42,7 +42,7 @@ export const createVolunteer = async (req, res) => {
         const newVolunteer = await volunteer.save();
         res.status(201).json(newVolunteer);
     } catch (err) {
-        req.status(500).json({message: err.message});   
+        res.status(500).json({message: err.message});   
     }
 };
 
@@ -65,7 +65,7 @@ export const updateVolunteer = async (req, res) => {
         res.json(updatedVolunteer);
 
     } catch (err) {
-        req.status(500).json({message: err.message});
+        res.status(500).json({message: err.message});
     }
 };
 
