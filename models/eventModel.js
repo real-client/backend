@@ -70,6 +70,11 @@ const eventSchema = new Schema({
     enum: ["open", "closed", "canceled"],
     required: true,
   },
+  type: {
+    type: String,
+    enum: ["webinar", "workshop"],
+    required: true,
+  },
 });
 
 const Event = mongoose.model("Event", eventSchema);
