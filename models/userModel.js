@@ -10,7 +10,7 @@ const userSchema = new Schema({
     enum: ["Student", "Alumni", "Academic Staff", "Administrative Staff"],
     required: false,
   },
-  uni_role: { type: String, required: true },
+  uni_role: { type: String, enum: ["LU Student", "LU Alumni", "LU Academic Staff", "LU Administrative Staff", "Not LU Student"], required: true },
   gender: { type: String, enum: ["Male", "Female"], required: true },
   phone: { type: String, required: true },
   date_of_birth: { type: Date, min: "1900-01-01", required: true },

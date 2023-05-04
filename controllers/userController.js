@@ -113,7 +113,7 @@ class User {
           password
         )
       ) {
-        res.status(400).send("Please fill the required inputs");
+        return res.status(400).send("Please fill the required inputs");
       }
 
       // check if user already exist
@@ -144,13 +144,13 @@ class User {
         residence: residence,
         student_id: student_id,
         special_needs: special_needs,
-        active_email: active_email.toLowerCase(),
+        active_email: active_email,
         faculty: faculty,
         branch: branch,
         is_lu_students: is_lu_students,
         password: encryptedPass,
         lu_role: lu_role,
-        uni_email: uni_email.toLowerCase(),
+        uni_email: uni_email,
         verified: verified,
         event: event,
         opportunity: opportunity,
