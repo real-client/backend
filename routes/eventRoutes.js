@@ -7,12 +7,16 @@ import {
   getEventById,
   updateEventById,
   deleteEventById,
+  getLatestEvents
 } from "../controllers/eventControllers.js";
 
 import imageUpload from "../middleware/imageUpload.js";
 
 // get all events
 router.get("/", getAllEvents);
+
+//get latest events
+router.get("/latest",getLatestEvents)
 
 // create a new event
 router.post("/", imageUpload,createEvent);
@@ -25,5 +29,6 @@ router.patch("/:id",imageUpload, updateEventById);
 
 // delete an event by ID
 router.delete("/:id",imageUpload, deleteEventById);
+
 
 export default router;

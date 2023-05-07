@@ -27,6 +27,16 @@ export const getAllEvents = async (req, res) => {
   }
 };
 
+// retrieve first 3 latest events
+export const getLatestEvents = async (req, res) => {
+  try {
+    const events = await Event.find({}).sort({ date: -1 }).limit(3);
+    res.status(200).send({ success: true, message: events});
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // retrieve a specific event by ID
 export const getEventById = async (req, res, next) => {
   try {
