@@ -59,15 +59,14 @@ const eventSchema = new Schema({
     required: true,
   },
   users: [
-  //   {
-  //   type: Schema.Types.ObjectId,
-  //   ref: "User",
-  //   // required: true,
-  // }
-],
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   status: {
     type: String,
-    enum: ["open", "closed", "canceled"],
+    enum: ["open", "closed", "cancelled"],
     required: true,
   },
   type: {

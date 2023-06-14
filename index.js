@@ -29,7 +29,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(function (err, req, res, next) {
   res.status(err.status || 500).send({
     success: false,
@@ -46,16 +46,13 @@ app.use("/admin", adminRouter);
 app.use("/team", teamRoutes);
 app.use("/volunteer", volunteersRoutes);
 app.use("/event", eventRoutes);
-app.use('/partner', partnerRouter)
-app.use('/opportunity', opportunityRouter)
+app.use("/partner", partnerRouter);
+app.use("/opportunity", opportunityRouter);
 
 app.use("/uploads", express.static("./uploads"));
 
-// Port 
+// Port
 app.listen(
   PORT,
   console.log(`Server Running in ${process.env.NODE_ENV} mode on Port ${PORT}`)
 );
-
-
-
