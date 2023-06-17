@@ -11,7 +11,7 @@ import {
   getPaginatedEvents,
 } from "../controllers/eventControllers.js";
 
-import imageUpload from "../middleware/imageUpload.js";
+import imageUpload from "../middleware/filesUpload.js";
 
 // get all events
 router.get("/", getAllEvents);

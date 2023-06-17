@@ -6,19 +6,14 @@ import path from "path";
 //create a new event
 export const createEvent = async (req, res) => {
   try {
-    console.log(req.body);
-
     req.body.users = [];
     req.body.waiting_list = [];
-
     const newEvent = new Event(req.body);
     const category = await newEvent.save();
-    console.log("Creating");
     res.status(200).json({ success: true, message: category });
   } catch (err) {
     if (err.name === "ValidationError") {
       const errors = Object.values(err.errors).map((val) => {
-        console.log("hey");
         return val.message;
       });
       res.status(400).json({ message: errors });
@@ -33,9 +28,10 @@ export const createEvent = async (req, res) => {
 export const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find({});
-    res.status(200).send({ success: true, message: events });
+    res.status(200).json({ success: true, events });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -44,11 +40,11 @@ export const getPaginatedEvents = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Number of events per page (default: 10)
-    const sortBy = req.query.sortBy || "event_dateTime"; // Sort by field (default: event_dateTime)
-    const sortOrder = req.query.sortOrder || "asc"; // Sort order (default: ascending)
+    const sortBy = req.query.sortBy || "event_dateTime.start"; // Sort by field (default: event_dateTime.start)
+    const sortOrder = req.query.sortOrder || "desc"; // Sort order (default: descending)
 
     const sortOptions = {};
-    sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
+    sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
 
     const totalEvents = await Event.countDocuments({});
     const totalPages = Math.ceil(totalEvents / limit);
@@ -83,16 +79,18 @@ export const getLatestEvents = async (req, res) => {
 // retrieve a specific event by ID
 export const getEventById = async (req, res, next) => {
   try {
-    console.log("hey");
     const event = await Event.findById(req.params.id);
-    console.log(event);
+
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Event not found" });
     }
-    res.status(200).send({ success: true, message: event });
-    next();
+
+    res.status(200).json({ success: true, event });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

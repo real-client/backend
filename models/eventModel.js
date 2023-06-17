@@ -19,6 +19,14 @@ const eventSchema = new Schema(
         },
       },
     ],
+    number_of_hours: {
+      type: Number,
+      required: true,
+    },
+    location: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: true,
@@ -97,6 +105,12 @@ const eventSchema = new Schema(
           "Peace & justice",
           "Partnership",
         ],
+      },
+    ],
+    partners: [
+      {
+        name: String,
+        website: String,
       },
     ],
     status: {
