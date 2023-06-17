@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import {createTeam ,getAllTeams, getTeamByID, updateTeam, deleteTeam}  from "../controllers/teamControllers.js"
-import imageUpload from "../middleware/imageUpload.js";
+import imageUpload from "../middleware/filesUpload.js";
 
 // Create a new team
 router.post('/',imageUpload, createTeam);
