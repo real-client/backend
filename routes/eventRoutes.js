@@ -5,8 +5,8 @@ import {
   getAllEvents,
   createEvent,
   getEventById,
-  updateEventById,
-  deleteEventById,
+  updateEvent,
+  deleteEvent,
   getLatestEvents,
   getPaginatedEvents,
 } from "../controllers/eventControllers.js";
@@ -28,9 +28,9 @@ router.post("/", imageUpload, createEvent);
 router.get("/:id", getEventById);
 
 // update a specific event by ID
-router.patch("/:id", imageUpload, updateEventById);
+router.patch("/:id", imageUpload, updateEvent);
 
 // delete an event by ID
-router.delete("/:id", deleteEventById);
+router.delete("/:id", deleteEvent);
 
 export default router;
