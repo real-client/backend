@@ -38,5 +38,4 @@ const vacancySchema = new Schema(
 );
 
 const Vacancy = model("Vacancy", vacancySchema);
-
-module.exports = Vacancy;
+export default Vacancy;
