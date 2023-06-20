@@ -1,115 +1,192 @@
-import Model from "../models/opportunityModel.js";
-
-import dotenv from "dotenv";
-
-dotenv.config();
+import Opportunity from "../models/opportunityModel.js";
+import fs from "fs";
 
 //get all the Opportunity
 export async function getAllOpportunity(req, res, next) {
-  console.log("database connected");
   try {
-    const response = await Model.find().exec();
-    res.status(200).send({ success: true, response });
+    const opportunities = await Opportunity.find().exec();
+    res.status(200).json({ success: true, opportunities });
   } catch (error) {
-    return res.status(500).json({
-      error: error.message,
-    });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
 //get Opportunity by id
 export function getOpportunityByID(req, res, next) {
-  let { id } = req.params;
-  Model.findOne({ _id: id })
-    .then((response) => {
-      if (!response) {
-        res.status(404).send({ message: "Opportunity not found" });
-      } else {
-        res.status(200).send({ response });
+  const { id } = req.params;
+  Opportunity.findOne({ _id: id })
+    .then((opportunity) => {
+      if (!opportunity) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Opportunity not found" });
       }
+      res.status(200).json({ success: true, opportunity });
     })
     .catch((err) => {
-      res.status(500).send({ message: err.message });
+      console.error(err);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
       next(err);
     });
 }
-
-// add new Opportunity
-export async function AddOpportunity(req, res) {
+// get paginated opportunities sorted by date
+export const getPaginatedOpportunities = async (req, res) => {
   try {
-    const model = new Model({
-      type: req.body.type,
-      capacity: req.body.capacity,
-      location: req.body.location,
-      deadline_date: req.body.deadline_date,
-      startup_date: req.body.startup_date,
-      goals: req.body.goals,
-      target_audience: req.body.target_audience,
-      partners: req.body.partners,
-      description: req.body.description,
-      status: req.body.status,
-      agenda: req.body.agenda,
-      title: req.body.title,
-    });
+    const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
+    const limit = parseInt(req.query.limit) || 10; // Number of events per page (default: 10)
+    const sortBy = req.query.sortBy || "  startup_date"; // Sort by field
+    const sortOrder = req.query.sortOrder || "desc"; // Sort order
 
-    const ad = await model.save();
-    // console.log(ad);
-    return res.status(201).send(ad);
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    const totalOpportunities = await Opportunity.countDocuments({});
+    const totalPages = Math.ceil(totalOpportunities / limit);
+
+    const opportunities = await Opportunity.find({})
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).send({
+      success: true,
+      page,
+      limit,
+      totalPages,
+      opportunities,
+    });
   } catch (err) {
-    res.status(500).send({ err });
+    res.status(500).json({ message: err.message });
   }
-}
+};
+
+// get paginated opportunities populated with users data
+export const getPaginatedPopulatedOpportunities = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
+    const limit = parseInt(req.query.limit) || 10; // Number of events per page (default: 10)
+    const sortBy = req.query.sortBy || "  startup_date"; // Sort by field
+    const sortOrder = req.query.sortOrder || "desc"; // Sort order
+
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    const totalOpportunities = await Opportunity.countDocuments({});
+    const totalPages = Math.ceil(totalOpportunities / limit);
+
+    const opportunities = await Opportunity.find({})
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("users");
+
+    res.status(200).send({
+      success: true,
+      page,
+      limit,
+      totalPages,
+      opportunities,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+// add new Opportunity
+export const createOpportunity = async (req, res) => {
+  try {
+    req.body.users = [];
+    const opportunity = new Opportunity(req.body);
+    const createdOpportunity = await opportunity.save();
+    res.status(200).json({ success: true, message: createdOpportunity });
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      const errors = Object.values(err.errors).map((val) => {
+        return val.message;
+      });
+      res.status(400).json({ message: errors });
+      console.log(err.message);
+    } else {
+      res.status(500).json({ message: err.message });
+    }
+  }
+};
 
 //update Opportunity
-
 export const updateOpportunity = async (req, res) => {
   try {
-    const opportunity = await Model.findById(req.params.id);
+    const opportunityId = req.params.id;
+    const updatedOpportunity = req.body;
+    const opportunity = await Opportunity.findById(opportunityId);
     if (!opportunity) {
       return res.status(404).json({ message: "opportunity not found" });
     }
-    opportunity.type = req.body.type;
-    opportunity.capacity = req.body.capacity;
-    opportunity.location = req.body.location;
-    opportunity.deadline_date = req.body.deadline_date;
-    opportunity.startup_date = req.body.startup_date;
-    opportunity.goals = req.body.goals;
-    opportunity.target_audience = req.body.target_audience;
-    opportunity.partners = req.body.partners;
-    opportunity.description = req.body.description;
-    opportunity.status = req.body.status;
-    opportunity.agenda = req.body.agenda;
-    opportunity.title = req.body.title;
+    // delete old image if new one is uploaded
+    if (req.files && req.files.image) {
+      const oldImagePath = opportunity.image;
+      if (oldImagePath) {
+        fs.unlinkSync(oldImagePath, (err) => {
+          if (err) throw err;
+          console.log(`Successfully deleted image ${opportunity.image}`);
+        });
+      }
+      updatedOpportunity.image = req.files.image[0].path;
+    }
 
-    const updatedopportunity = await opportunity.save();
-    res.json(updatedopportunity);
+    // delete old pdf if new one is uploaded
+    if (req.files && req.files.pdf) {
+      const oldPdfPath = opportunity.pdf;
+      if (oldPdfPath) {
+        fs.unlinkSync(oldPdfPath, (err) => {
+          if (err) throw err;
+          console.log(`Successfully deleted pdf ${opportunity.pdf}`);
+        });
+      }
+      updatedOpportunity.pdf = req.files.pdf[0].path;
+    }
+    const updatedOpp = await Opportunity.findByIdAndUpdate(
+      opportunityId,
+      updatedOpportunity,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    res.status(200).json({ success: true, message: updatedOpp });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
 //delete an Opportunity by id
-export function deleteOpportunity(req, res, next) {
-  let { id } = req.params;
-  Model.findByIdAndDelete(id)
-    .then((data) => {
-      if (!data) {
-        res.status(404).send({ message: "Opportunity not found" });
-      } else {
-        res.status(200).send({ success: true, message: "delete successfully" });
+export const deleteOpportunity = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const opportunity = await Opportunity.findByIdAndDelete(id);
+    if (!opportunity) {
+      return res.status(404).send({ error: "Opportunity  not found" });
+    }
+    if (opportunity.image !== null && opportunity.image !== undefined) {
+      try {
+        fs.unlinkSync(`${opportunity.image}`);
+        console.log(`Successfully deleted image ${opportunity.image}`);
+      } catch (error) {
+        console.error(error);
       }
-    })
-
-    .catch((err) => {
-      res.status(500).send({ message: "error deleting Opportunity" });
-    });
-}
-
-const OpportunityController = {
-  getAllOpportunity,
-  getOpportunityByID,
-  AddOpportunity,
-  updateOpportunity,
-  deleteOpportunity,
+    }
+    if (opportunity.pdf !== null && opportunity.pdf !== undefined) {
+      try {
+        fs.unlinkSync(`${opportunity.pdf}`);
+        console.log(`Successfully deleted pdf ${opportunity.pdf}`);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    res.send({ message: "Opportunity deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Internal server error" });
+  }
 };
-export default OpportunityController;
