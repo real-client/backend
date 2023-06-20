@@ -9,6 +9,7 @@ import {
   deleteEvent,
   getLatestEvents,
   getPaginatedEvents,
+  getPaginatedPopulatedEvents,
 } from "../controllers/eventControllers.js";
 
 import imageUpload from "../middleware/filesUpload.js";
@@ -20,6 +21,9 @@ router.get("/sortedbydate", getPaginatedEvents);
 
 //get latest events
 router.get("/latest", getLatestEvents);
+
+//Get paginated events populated with user data
+router.get("/users", getPaginatedPopulatedEvents);
 
 // create a new event
 router.post("/", imageUpload, createEvent);

@@ -9,6 +9,7 @@ import connectDB from "./config/db.js";
 import teamRoutes from "./routes/teamRoutes.js";
 import volunteersRoutes from "./routes/volunteersRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
+import vacancyRoutes from "./routes/vacancyRoutes.js";
 import partnerRouter from "./routes/partnerRoute.js";
 import opportunityRouter from "./routes/opportunityRoute.js";
 import userRouter from "./routes/userRoutes.js";
@@ -41,13 +42,18 @@ app.use(function (err, req, res, next) {
 app.get("/", (req, res) => {
   res.send("API is running ...");
 });
-app.use("/user", userRouter);
-app.use("/admin", adminRouter);
-app.use("/team", teamRoutes);
-app.use("/volunteer", volunteersRoutes);
-app.use("/event", eventRoutes);
-app.use("/partner", partnerRouter);
-app.use("/opportunity", opportunityRouter);
+app.use("/api/user", userRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/team", teamRoutes);
+app.use("/api/volunteer", volunteersRoutes);
+app.use("/api/event", eventRoutes);
+app.use("/api/vacancy", vacancyRoutes)
+app.use("/api/partner", partnerRouter);
+app.use("/api/opportunity", opportunityRouter);
+
+
+// api versioning 
+
 
 app.use("/uploads", express.static("./uploads"));
 

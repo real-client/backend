@@ -1,4 +1,3 @@
-import express from "express";
 import Event from "../models/eventModel.js";
 import fs from "fs";
 import path from "path";
@@ -66,10 +65,44 @@ export const getPaginatedEvents = async (req, res) => {
   }
 };
 
+// get paginated opportunities populated with users data
+export const getPaginatedPopulatedEvents = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
+    const limit = parseInt(req.query.limit) || 10; // Number of events per page (default: 10)
+    const sortBy = req.query.sortBy || "event_dateTime.start"; // Sort by field (default: event_dateTime.start)
+    const sortOrder = req.query.sortOrder || "desc"; // Sort order (default: descending)
+
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    const totalEvents = await Event.countDocuments({});
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    const events = await Event.find({})
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("users waiting_list");
+
+    res.status(200).send({
+      success: true,
+      page,
+      limit,
+      totalPages,
+      events,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // retrieve first 3 latest events
 export const getLatestEvents = async (req, res) => {
   try {
-    const events = await Event.find({}).sort({ date: -1 }).limit(3);
+    const events = await Event.find({})
+      .sort({ "event_dateTime.start": -1 })
+      .limit(3);
     res.status(200).send({ success: true, message: events });
   } catch (err) {
     res.status(500).json({ message: err.message });

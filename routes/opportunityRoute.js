@@ -5,6 +5,7 @@ import {
   getAllOpportunity,
   getOpportunityByID,
   getPaginatedOpportunities,
+  getPaginatedPopulatedOpportunities,
   updateOpportunity,
   deleteOpportunity,
 } from "../controllers/opportunityController.js";
@@ -19,6 +20,9 @@ router.get("/", getAllOpportunity);
 
 // Get paginated Opportunities
 router.get("/sortedbydate", getPaginatedOpportunities);
+
+// Get paginated Opportunities populated with users data
+router.get("/users", getPaginatedPopulatedOpportunities);
 
 // Get Opportunity by ID
 router.get("/:id", getOpportunityByID);

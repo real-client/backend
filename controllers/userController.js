@@ -197,6 +197,11 @@ class User {
           }
         );
 
+        // refresh token
+        // 2 factor authentication
+        // oauth ()
+        // social
+
         // save user token
         user.token = token;
 
