@@ -1,7 +1,8 @@
 import express from "express";
 const router = express.Router();
+import imageUpload from "../middleware/filesUpload.js";
 import {
-  AddPartner,
+  createPartner,
   getAllPartner,
   getPartnerByID,
   updatePartner,
@@ -9,7 +10,7 @@ import {
 } from "../controllers/partnerController.js";
 
 // add a new partner
-router.post("/add", AddPartner);
+router.post("/", imageUpload, createPartner);
 
 // Get all partner
 router.get("/", getAllPartner);
@@ -18,7 +19,7 @@ router.get("/", getAllPartner);
 router.get("/:id", getPartnerByID);
 
 // Update an existing partner by ID
-router.put("/:id", updatePartner);
+router.patch("/:id", imageUpload, updatePartner);
 
 // Delete a partner by ID
 router.delete("/:id", deletePartner);

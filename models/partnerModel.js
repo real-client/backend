@@ -1,4 +1,4 @@
-const { Schema, model } = mongoose;
+import { Schema, model } from "mongoose";
 
 const partnerSchema = new Schema(
   {
@@ -7,7 +7,7 @@ const partnerSchema = new Schema(
       required: true,
       unique: [true, "Name already exists"],
     },
-    logo: {
+    image: {
       type: String,
       required: true,
     },
