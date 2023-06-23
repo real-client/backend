@@ -1,84 +1,121 @@
 import Team from "../models/teamModels.js";
+import fs from "fs";
 
 //get all teams
 export const getAllTeams = async (req, res) => {
-    try {
-        const teams = await Team.find();
-        res.json(teams);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-}
+  try {
+    const teams = await Team.find();
+    res.status(200).json({ success: true, message: teams });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 //get team by ID
-export const getTeamByID = async (req, res) => {
-    try {
-        const team = await Team.findById(req.params.id);
-        if (!team) {
-          return res.status(404).json({ message: 'Team not found' });
-        }
-        res.json(team);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+export const getTeamMemberByID = async (req, res) => {
+  try {
+    const team = await Team.findById(req.params.id);
+    if (!team) {
+      return res.status(404).json({ message: "Team not found" });
     }
+    res.status(200).json({ success: true, team });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 //create new team
-export const createTeam = async (req, res) => {
-   
-      try {
-        const team = new Team({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            image: req.body.image,
-            title: req.body.title,
-            email: req.body.email,
-            linkedin: req.body.linkedin,
-            role: req.body.role
-          });
-          
-        const newTeam = await team.save();
-        res.status(201).json(newTeam);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
+export const createTeamMember = async (req, res) => {
+  try {
+    const {
+      first_name,
+      last_name,
+      image,
+      title,
+      role,
+      starting_date,
+      ending_date,
+      is_active,
+      contact,
+    } = req.body;
+
+    const teamMember = new Team({
+      first_name,
+      last_name,
+      image,
+      title,
+      role,
+      starting_date,
+      ending_date,
+      is_active,
+      contact,
+    });
+
+    const savedTeamMember = await teamMember.save();
+
+    res.status(201).json({ success: true, savedTeamMember });
+  } catch (err) {
+    if (err.name === "ValidationError") {
+      const errors = Object.values(err.errors).map((val) => {
+        return val.message;
+      });
+      res.status(400).json({ message: errors });
+      console.log(err.message);
+    } else {
+      res.status(500).json({ message: err.message });
     }
+  }
 };
 
 //update an existing team
-export const updateTeam = async (req, res) => {
-    try {
-        const team = await Team.findById(req.params.id);
-        if (!team) {
-            return res.status(404).json({ message: 'Team not found' });
-        }
-        team.firstName = req.body.firstName;
-        team.lastName = req.body.lastName;
-        team.image = req.body.image;
-        team.title = req.body.title;
-        team.email = req.body.email;
-        team.linkedin = req.body.linkedin;
-        team.role = req.body.role;
-
-        const updatedTeam = await team.save ();
-        res.json(updatedTeam);
-    }   catch (err) {
-        res.status(400).json({ message: err.message });
+export const updateTeamMember = async (req, res) => {
+  try {
+    const teamId = req.params.id;
+    const updatedData = req.body;
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ error: "Team not found" });
     }
+
+    // Delete previous image if a new image is provided
+    if (updatedData.image && team.image !== updatedData.image) {
+      if (team.image) {
+        // Delete the previous image file
+        fs.unlinkSync(team.image);
+      }
+    }
+
+    // Update team data
+    Object.assign(team, updatedData);
+
+    // Save the updated team
+    await team.save();
+
+    return res.json(team);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 //delete team by ID
-export function deleteTeam(req, res, next) {
-    let { id } = req.params;
-    Team.findByIdAndDelete(id)
-      .then((data) => {
-        if (!data) {
-          res.status(404).send({ message: "team not found" });
-        } else {
-          res.status(200).send({ success: true, message: "delete successfully" });
-        }
-      })
-  
-      .catch((err) => {
-        res.status(500).send({ message: "error deleting Opportunity" });
-      });
+export const deleteTeamMember = async (req, res) => {
+  try {
+    const teamMemberId = req.params.id;
+    const teamMember = await Team.findById(teamMemberId);
+
+    if (!teamMember) {
+      return res.status(404).json({ message: "Team member not found" });
+    }
+
+    if (teamMember.image) {
+      fs.unlinkSync(teamMember.image);
+    }
+
+    await Team.findByIdAndDelete(teamMemberId);
+    res
+      .status(200)
+      .json({ success: true, message: "Team member deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
+};

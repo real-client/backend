@@ -1,21 +1,28 @@
 import express from "express";
 const router = express.Router();
-import {createTeam ,getAllTeams, getTeamByID, updateTeam, deleteTeam}  from "../controllers/teamControllers.js"
+
+import {
+  createTeamMember,
+  getAllTeams,
+  getTeamMemberByID,
+  updateTeamMember,
+  deleteTeamMember,
+} from "../controllers/teamControllers.js";
 import imageUpload from "../middleware/filesUpload.js";
 
 // Create a new team
-router.post('/',imageUpload, createTeam);
+router.post("/", imageUpload, createTeamMember);
 
 // Get all teams
-router.get('/', getAllTeams);
+router.get("/", getAllTeams);
 
 // Get a single team by ID
-router.get('/:id', getTeamByID);
+router.get("/:id", getTeamMemberByID);
 
 // Update an existing team by ID
-router.put('/:id',imageUpload, updateTeam);
+router.patch("/:id", imageUpload, updateTeamMember);
 
 // Delete a team by ID
-router.delete('/:id', deleteTeam);
+router.delete("/:id", deleteTeamMember);
 
 export default router;

@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import validator from "validator";
 
 const teamSchema = new Schema(
   {
@@ -38,12 +39,24 @@ const teamSchema = new Schema(
       default: true,
     },
     contact: {
-      email: { type: String },
-      phone: { type: String },
+      email: {
+        type: String,
+        validate: {
+          validator: validator.isEmail,
+          message: "Invalid email address",
+        },
+      },
+      phone: {
+        type: String,
+        validate: {
+          validator: function (phone) {
+            return validator.isMobilePhone(phone, "any");
+          },
+          message: "Invalid phone number",
+        },
+      },
       socialMedia: {
         twitter: { type: String },
-        instagram: { type: String },
-        facebook: { type: String },
         linkedin: { type: String },
       },
     },
