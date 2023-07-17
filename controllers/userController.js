@@ -197,11 +197,6 @@ class User {
           }
         );
 
-        // refresh token
-        // 2 factor authentication
-        // oauth ()
-        // social
-
         // save user token
         user.token = token;
 
@@ -218,3 +213,112 @@ class User {
 
 const userController = new User();
 export default userController;
+
+// refresh token
+// 2 factor authentication
+// oauth ()
+// social
+
+export const register = async (req, res, next) => {
+  try {
+    // Get user input
+    const {
+      first_name,
+      last_name,
+      father_name,
+      title,
+      role,
+      date_of_birth,
+      gender,
+      phone,
+      nationality,
+      residence,
+      student_id,
+      special_needs,
+      lu_email,
+      active_email,
+      password,
+      faculty,
+      branch,
+      privacy_consent,
+      privacy_policy_agreement,
+      verified,
+      events,
+      opportunities,
+    } = req.body;
+
+    // Validate user input
+    if (
+      !(
+        first_name &&
+        last_name &&
+        father_name &&
+        title &&
+        role &&
+        date_of_birth &&
+        gender &&
+        phone &&
+        nationality &&
+        residence &&
+        student_id &&
+        special_needs !== undefined &&
+        active_email &&
+        password &&
+        faculty &&
+        branch &&
+        privacy_consent !== undefined &&
+        privacy_policy_agreement !== undefined
+      )
+    ) {
+      return res.status(400).send("Please fill in the required inputs");
+    }
+
+    // Check if the user already exists
+    const existingUser = await User.findOne({ active_email });
+    if (existingUser) {
+      return res.status(409).send("User already exists. Please login");
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
+    const user = new User({
+      first_name,
+      last_name,
+      father_name,
+      title,
+      role,
+      date_of_birth,
+      gender,
+      phone,
+      nationality,
+      residence,
+      student_id,
+      special_needs,
+      lu_email,
+      active_email,
+      password: hashedPassword,
+      faculty,
+      branch,
+      privacy_consent,
+      privacy_policy_agreement,
+      verified,
+      events,
+      opportunities,
+    });
+    await user.save();
+
+    // Create token
+    const token = jwt.sign(
+      { user_id: user._id, active_email },
+      process.env.USER_TOKEN_KEY,
+      { expiresIn: "5h" }
+    );
+
+    // Return the new user and token
+    res.status(201).json({ user, token });
+  } catch (error) {
+    next(error);
+  }
+};

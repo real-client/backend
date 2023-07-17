@@ -152,6 +152,7 @@ const userSchema = new Schema(
       ],
       required: true,
     },
+
     branch: {
       type: String,
       enum: [
