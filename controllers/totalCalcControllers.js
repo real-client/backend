@@ -3,7 +3,7 @@ import Vacancy from "../models/vacancyModel.js";
 import Event from "../models/vacancyModel.js";
 import User from "../models/vacancyModel.js";
 
-export async function getTotalCalc(req, res, next) {
+export async function getAllCalculations(req, res, next) {
   try {
     const opportunities = await Opportunity.count();
     const vacancies = await Vacancy.count();
