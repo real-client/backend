@@ -14,6 +14,7 @@ import partnerRouter from "./routes/partnerRoute.js";
 import opportunityRouter from "./routes/opportunityRoute.js";
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
+import totalCalcRouter from "./routes/totalCalcRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -50,6 +51,7 @@ app.use("/api/event", eventRoutes);
 app.use("/api/vacancy", vacancyRoutes)
 app.use("/api/partner", partnerRouter);
 app.use("/api/opportunity", opportunityRouter);
+app.use("/api/total-calculations", totalCalcRouter);
 
 
 // api versioning 
